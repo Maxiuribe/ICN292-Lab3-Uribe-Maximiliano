@@ -1,0 +1,102 @@
+{
+  "name": "Tabla",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8e16f1e8-1169-4e3a-8a19-d7ab1f251cf9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { id_solicitud: \"DEV-1115\", monto: 19990, dias_desde_compra: 3, estado_producto: \"sin_abrir\" } },\n  { json: { id_solicitud: \"DEV-1116\", monto: 69980, dias_desde_compra: 5, estado_producto: \"abierto_sin_uso\" } },\n  { json: { id_solicitud: \"DEV-1117\", monto: 24990, dias_desde_compra: 12, estado_producto: \"con_fallas\" } },\n  { json: { id_solicitud: \"DEV-1118\", monto: 79990, dias_desde_compra: 4, estado_producto: \"sin_abrir\" } },\n  { json: { id_solicitud: \"DEV-1119\", monto: 45990, dias_desde_compra: 25, estado_producto: \"danado_por_uso\" } },\n  { json: { id_solicitud: \"DEV-1120\", monto: 89990, dias_desde_compra: 2, estado_producto: \"con_fallas\" } },\n  { json: { id_solicitud: \"DEV-1121\", monto: 289990, dias_desde_compra: 9, estado_producto: \"sin_abrir\" } },\n  { json: { id_solicitud: \"DEV-1122\", monto: 45990, dias_desde_compra: 2, estado_producto: \"sin_abrir\" } },\n  { json: { id_solicitud: \"DEV-1123\", monto: 39980, dias_desde_compra: 15, estado_producto: \"danado_por_uso\" } },\n  { json: { id_solicitud: \"DEV-1124\", monto: 49980, dias_desde_compra: 1, estado_producto: \"abierto_sin_uso\" } },\n  { json: { id_solicitud: \"DEV-1125\", monto: 34990, dias_desde_compra: 22, estado_producto: \"sin_abrir\" } },\n  { json: { id_solicitud: \"DEV-1126\", monto: 79990, dias_desde_compra: 8, estado_producto: \"con_fallas\" } },\n  { json: { id_solicitud: \"DEV-C01\", monto: 9990, dias_desde_compra: 1, estado_producto: \"sin_abrir\" } },\n  { json: { id_solicitud: \"DEV-C02\", monto: 289990, dias_desde_compra: 2, estado_producto: \"sin_abrir\" } },\n  { json: { id_solicitud: \"DEV-C03\", monto: 79990, dias_desde_compra: 29, estado_producto: \"abierto_sin_uso\" } }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "17150856-f61e-4e65-8aa5-b30af25503aa",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://muribe.app.n8n.cloud/webhook-test/devoluciones",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id_solicitud",
+              "value": "=={{ $json.id_solicitud }}"
+            },
+            {
+              "name": "monto",
+              "value": "=={{ $json.monto }}"
+            },
+            {
+              "name": "dias_desde_compra",
+              "value": "=={{ $json.dias_desde_compra }}"
+            },
+            {
+              "name": "estado_producto",
+              "value": "=={{ $json.estado_producto }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "eff65b6c-8794-4266-9503-5e5a35dad529",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bd9950c7-0f52-457f-a62e-9b8da30c9269",
+  "meta": {
+    "instanceId": "7f4d5d0296ca4f6b06d2023a3bc8ced7e58e9dee2f0f54f52cefa1c882764830"
+  },
+  "nodeGroups": [],
+  "id": "XYUc8291S9BGyoFo",
+  "tags": []
+}

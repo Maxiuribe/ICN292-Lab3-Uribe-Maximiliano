@@ -1,0 +1,121 @@
+{
+  "name": "Resumen Diario - Devoluciones",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ae738df1-df4a-48f7-8089-2c2b27ce9ce5",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { id_solicitud: \"DEV-1115\", monto: 19990, ruta: \"APROBACION\" } },\n  { json: { id_solicitud: \"DEV-1116\", monto: 69980, ruta: \"APROBACION\" } },\n  { json: { id_solicitud: \"DEV-1117\", monto: 24990, ruta: \"REVISION\" } },\n  { json: { id_solicitud: \"DEV-1118\", monto: 79990, ruta: \"REVISION\" } },\n  { json: { id_solicitud: \"DEV-1119\", monto: 45990, ruta: \"RECHAZO\" } },\n  { json: { id_solicitud: \"DEV-1120\", monto: 89990, ruta: \"REVISION\" } },\n  { json: { id_solicitud: \"DEV-1121\", monto: 289990, ruta: \"REVISION\" } },\n  { json: { id_solicitud: \"DEV-1122\", monto: 45990, ruta: \"APROBACION\" } },\n  { json: { id_solicitud: \"DEV-1123\", monto: 39980, ruta: \"RECHAZO\" } },\n  { json: { id_solicitud: \"DEV-1124\", monto: 49980, ruta: \"APROBACION\" } },\n  { json: { id_solicitud: \"DEV-1125\", monto: 34990, ruta: \"RECHAZO\" } },\n  { json: { id_solicitud: \"DEV-1126\", monto: 79990, ruta: \"REVISION\" } },\n  { json: { id_solicitud: \"DEV-C01\", monto: 9990, ruta: \"APROBACION\" } },\n  { json: { id_solicitud: \"DEV-C02\", monto: 289990, ruta: \"REVISION\" } },\n  { json: { id_solicitud: \"DEV-C03\", monto: 79990, ruta: \"RECHAZO\" } }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "754fe6c2-c772-4a61-8103-0c4ce3e80235",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "monto"
+            },
+            {
+              "field": "id_solicitud"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "ruta",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "52f428c6-4cd0-4cb5-b1d2-68d748758731",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nlet totalMontoDia = 0;\nlet totalSolicitudesDia = 0;\nlet aprobadasCount = 0;\nlet desgloseText = \"\";\n\nfor (const item of items) {\n  const ruta = item.json.ruta;\n  const cantidad = item.json.count_id_solicitud || 0;\n  const montoRuta = item.json.sum_monto || 0;\n\n  totalSolicitudesDia += cantidad;\n  totalMontoDia += montoRuta;\n\n  if (ruta === \"APROBACION\") {\n    aprobadasCount = cantidad;\n  }\n\n  desgloseText += `• ${ruta}: ${cantidad} solicitudes | Monto: $${montoRuta.toLocaleString('es-CL')}\\n`;\n}\n\nlet tasaAprobacion = 0;\nif (totalSolicitudesDia > 0) {\n  tasaAprobacion = ((aprobadasCount / totalSolicitudesDia) * 100).toFixed(2);\n}\n\nconst mensajeConsolidado = `\n REPORTE CONSOLIDADO DIARIO DE DEVOLUCIONES\n\nFECHA: ${new Date().toLocaleDateString('es-CL')}\n\nDETALLE POR RUTA:\n${desgloseText}\nRESUMEN GENERAL:\n• Monto Total del Día: $${totalMontoDia.toLocaleString('es-CL')}\n• Total Solicitudes Procesadas: ${totalSolicitudesDia}\n• Tasa de Aprobación Automática: ${tasaAprobacion}%\n\n`.trim();\n\nreturn [{ json: { mensajeConsolidado, totalMontoDia, totalSolicitudesDia, tasaAprobacion } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "635093d4-8086-46ec-94bd-d934c29a055d",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "550ff686-1f7a-44f5-bc08-7f90b94646af",
+  "meta": {
+    "instanceId": "7f4d5d0296ca4f6b06d2023a3bc8ced7e58e9dee2f0f54f52cefa1c882764830"
+  },
+  "nodeGroups": [],
+  "id": "OO3nYCiEp3j1S8Bw",
+  "tags": []
+}
